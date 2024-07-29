@@ -1,0 +1,22 @@
+{
+  "name": "suportis-rap",
+  "version": "0.0.2",
+  "type": "module",
+  "description": "CLI Tools for Developing with SAP RAP and/or ABAP Cloud",
+  "bin": {
+    "rap": "./bin/rap"
+  },
+  "scripts": {},
+  "keywords": [
+    "sap_rap",
+    "abap_cloud",
+    "sap",
+    "suportis"
+  ],
+  "author": "carsten.schlegel@suportis.com",
+  "license": "ISC",
+  "dependencies": {
+    "clipboardy": "^4.0.0",
+    "prompt-sync": "^4.2.0"
+  }
+}

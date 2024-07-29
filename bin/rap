@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+// Import modules
+// For parameters handling
+import params from './params.js';
+// For commands handling
+import commands from './commands.js';
+// For importing package.json without experimental warning
+import { createRequire } from "module";
+const PJSON = createRequire(import.meta.url)("../package.json");
+commands.version = PJSON.version;
+
+
+// prepare params
+const paramsArray = process.argv.slice(2);
+params.init(paramsArray);
+commands.params = params;
+
+// Compare first parameter and call handler
+params.compare(1, params.list.help.paramlist, commands.help);
+params.compare(1, params.list.version.paramlist, commands.showversion);
+params.compare(1, params.list.datagenGPT.paramlist, commands.datagenGPT);
+params.compare(1, params.list.datagen.paramlist, commands.datagen);
