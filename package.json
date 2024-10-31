@@ -1,6 +1,6 @@
 {
   "name": "suportis-rap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "description": "CLI Tools for Developing with SAP RAP and/or ABAP Cloud",
   "bin": {

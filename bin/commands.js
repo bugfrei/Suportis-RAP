@@ -164,18 +164,19 @@ const commands = {
 
         var code = "";
         if ( deleteContent ) {
-            codeSuf += `    DELETE FROM ${ tablename.toLowerCase() }.\n`;
+            codePre += `    DELETE FROM ${ tablename.toLowerCase() }.\n`;
         }
         if ( existsDraft && deleteDraftContent ) {
-            codeSuf += `    DELETE FROM ${ draftTablename.toLowerCase() }.\n`;
+            codePre += `    DELETE FROM ${ draftTablename.toLowerCase() }.\n`;
         }
         
         let num = 0;
 
         for ( var row of dataObject ) {
-            if (num = 0) {
-                codePre += `    TRY.\n`
-                codePre += `      itab = VALUE #(\n`;
+            if (num == 0) {
+                code += `    TRY.\n`
+                code += `      CLEAR itab.\n`;
+                code += `      itab = VALUE #(\n`;
             }
             code += `        (\n`;
             for ( var key in row ) {
@@ -247,6 +248,9 @@ const commands = {
                     code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
                 }
             }
+            else {
+                num++;
+            }
         }
         if (num > 0) {
             code += `      ).\n`;
@@ -258,6 +262,9 @@ const commands = {
                 code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
             }
         }
+        
+        let codeSuf = "";
+
 
         if ( writeLog ) {
             codeSuf += `    out->write( |{ sum } entries inserted totaly| ).\n`;

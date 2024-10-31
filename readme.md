@@ -80,4 +80,4 @@ Immer als String im Format 'yyyymmdd'
 - 0.0.2 : Refactoring in modules
 - 0.0.3 : Version from package.json, change readme
 - 0.0.4 : Größere Datenmengen werden in max. 40er Datensätze eingetragen
-
+- 0.0.5 : Bugfix Klassengenerierung mit 40er Datensatz Pakete
