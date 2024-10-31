@@ -159,12 +159,24 @@ const commands = {
         codePre += `CLASS ${ classname } IMPLEMENTATION.\n\n`;
         codePre += `  METHOD if_oo_adt_classrun~main.\n`;
         codePre += `    DATA itab TYPE TABLE OF ${ tablename.toLowerCase() }.\n\n`;
-        codePre += `    TRY.\n`
-        codePre += `      itab = VALUE #(\n`;
+        codePre += `    DATA sum TYPE num10.\n`;
+        codePre += `    sum = 0.\n\n`;
 
         var code = "";
+        if ( deleteContent ) {
+            codeSuf += `    DELETE FROM ${ tablename.toLowerCase() }.\n`;
+        }
+        if ( existsDraft && deleteDraftContent ) {
+            codeSuf += `    DELETE FROM ${ draftTablename.toLowerCase() }.\n`;
+        }
+        
+        let num = 0;
 
         for ( var row of dataObject ) {
+            if (num = 0) {
+                codePre += `    TRY.\n`
+                codePre += `      itab = VALUE #(\n`;
+            }
             code += `        (\n`;
             for ( var key in row ) {
                 var value = row[ key ];
@@ -224,22 +236,31 @@ const commands = {
                 code += `          ${ key.toLowerCase() } = ${ value }\n`;
             }
             code += `        )\n`;
+            if (num == 39) {
+                num = 0;
+                code += `      ).\n`;
+                code += `    CATCH cx_root.\n`;
+                code += `    ENDTRY.\n\n`;
+                code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE itab.\n\n`;
+                if (writeLog) {
+                    code += `    sum = sum + sy-dbcnt.\n`;
+                    code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
+                }
+            }
+        }
+        if (num > 0) {
+            code += `      ).\n`;
+            code += `    CATCH cx_root.\n`;
+            code += `    ENDTRY.\n\n`;
+            code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE itab.\n\n`;
+            if (writeLog) {
+                code += `    sum = sum + sy-dbcnt.\n`;
+                code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
+            }
         }
 
-        var codeSuf = "    ).\n";
-        codeSuf +=    "    CATCH cx_root.\n";
-        codeSuf +=    "    ENDTRY.\n\n";
-        if ( deleteContent ) {
-            codeSuf += `    DELETE FROM ${ tablename.toLowerCase() }.\n`;
-        }
-        if ( existsDraft && deleteDraftContent ) {
-            codeSuf += `    DELETE FROM ${ draftTablename.toLowerCase() }.\n`;
-        }
-        codeSuf += "\n";
-        codeSuf += `    INSERT ${ tablename.toLowerCase() } FROM TABLE itab.\n`;
-        codeSuf += "\n";
         if ( writeLog ) {
-            codeSuf += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
+            codeSuf += `    out->write( |{ sum } entries inserted totaly| ).\n`;
         }
         codeSuf += "\n";
         codeSuf += `  ENDMETHOD.\n`;
