@@ -37,8 +37,10 @@ const commands = {
             }
             var feldtyp = "";
             var addinfo = "";
+            var decimals = "";
             var von = "";
             var bis = "";
+            var numbertype = "";
             var uuid = "";
             if ( feldname == "id" ) {
                 if ( inout.readAsk( "UUID Feld?", "y" ) ) {
@@ -74,9 +76,33 @@ const commands = {
                     feldtyp = "bool";
                 }
                 else if ( feldtyp.startsWith( "n" ) ) {
-                    von = inout.read( "Von", "1" );
-                    bis = inout.read( "Bis", "100" );
-                    feldtyp = "number";
+                    numbertype = inout.read( "Nummerntyp (Ganzzahl (int) Zufallszahl, Fließkommazahl (double) Zufallszahl, Nummerierung (fortlaufend), Benutzerdefiniert)", "" ).toLowerCase();
+                    if ( numbertype.startsWith( "g" ) ) {
+                        von = inout.read( "Von", "1" );
+                        bis = inout.read( "Bis", "100" );
+                        feldtyp = "number";
+                        addinfo = "Ganzzahlige Zufallszahl";
+                    }
+                    else if ( numbertype.startsWith( "f" ) ) {
+                        decimals = inout.read( "Anzahl Nachkommastellen", "2" );
+                        var decNulls = "0".repeat( decimals );
+                        von = inout.read( "Von", `1.${decNulls}` );
+                        bis = inout.read( "Bis", `100.${decNulls}` );
+                        feldtyp = "number";
+                        addinfo = `Fließkommazahl als Zufallszahl mit ${ decimals } Nachkommastellen`;
+                    }
+                    else if ( numbertype.startsWith( "n" ) ) {
+                        von = inout.read( "Startwert", "1" );
+                        feldtyp = "number";
+                        addinfo = `Fortlaufende Nummer ab ${ von }`;
+                    }
+                    else if ( numbertype.startsWith( "b" ) ) {
+                        addinfo = inout.read( "Benutzerdefinierte Information zur Zahl", "" );
+                        feldtyp = "number";
+                    }
+                    else {
+                        feldtyp = "";
+                    }
                 }
                 else if ( feldtyp.startsWith( "s" ) ) {
                     console.log( `${ inout.gray }Beim String wird ohne Angabe zusätzliche Informationen der Feldname als Inhaltsbeschreibung genommen${ inout.reset }` );
@@ -100,12 +126,7 @@ const commands = {
                     query += `ist ein JSON Boolean\n`;
                 }
                 else if ( feldtyp == "number" ) {
-                    if ( von != "" && bis != "" ) {
-                        query += `ist ein JSON Number im Bereich ${ von } bis ${ bis }\n`;
-                    }
-                    else {
-                        query += `ist ein JSON Number\n`;
-                    }
+                    query += `ist ein JSON Number ${ addinfo }\n`;
                 }
                 else if ( feldtyp == "string" ) {
                     if ( addinfo != "" ) {

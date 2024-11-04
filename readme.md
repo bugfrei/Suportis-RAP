@@ -82,3 +82,5 @@ Immer als String im Format 'yyyymmdd'
 - 0.0.4 : Größere Datenmengen werden in max. 40er Datensätze eingetragen
 - 0.0.5 : Bugfix Klassengenerierung mit 40er Datensatz Pakete
 - 0.0.6 : Bugfix sum Datentyp, itab mit @ markiert und UUID auch möglich wenn manuell gewählt (nicht anhand des Feldnamens ID erkannt)
+- 0.0.7 : Datentyp Number nun mit mehr Möglichkeiten
+ 
