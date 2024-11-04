@@ -39,6 +39,7 @@ const commands = {
             var addinfo = "";
             var von = "";
             var bis = "";
+            var uuid = "";
             if ( feldname == "id" ) {
                 if ( inout.readAsk( "UUID Feld?", "y" ) ) {
                     feldtyp = tools.idType();
@@ -50,7 +51,20 @@ const commands = {
             if ( feldtyp == "" ) {
                 feldtyp = inout.read( "Feldtyp (UUID, Date, Boolean, Number, String)", "" ).toLowerCase();
                 if ( feldtyp.startsWith( "u" ) ) {
-                    feldtyp = idType();
+                    if (inout.readAsk( "In der ABAP-Klasse generierte UUID?", "n") ) {
+                        feldtyp = tools.idType();
+                    }
+                    else {
+                        uuid = inout.read( "UUID Type (16, 36, 32, 26, 22)", "16" );
+                        if (inout.readAsk( "ABAP kompatibel (ohne -, Großbuchstaben)?", "y")) {
+                            feldtyp = "string";
+                            addinfo = "einer 16 Byte UUID jedoch ohne Bindestriche und die Buchstaben A bis F in Großbuchstaben";
+                        }
+                        else {
+                            feldtyp = "string";
+                            addinfo = "UUID";
+                        }
+                    }
                 }
                 else if ( feldtyp.startsWith( "d" ) ) {
                     addinfo = inout.read( "Zusätzliche Information zum Datum", "Geburtsdatum" );
@@ -159,7 +173,7 @@ const commands = {
         codePre += `CLASS ${ classname } IMPLEMENTATION.\n\n`;
         codePre += `  METHOD if_oo_adt_classrun~main.\n`;
         codePre += `    DATA itab TYPE TABLE OF ${ tablename.toLowerCase() }.\n\n`;
-        codePre += `    DATA sum TYPE num10.\n`;
+        codePre += `    DATA sum TYPE i.\n`;
         codePre += `    sum = 0.\n\n`;
 
         var code = "";
@@ -242,7 +256,7 @@ const commands = {
                 code += `      ).\n`;
                 code += `    CATCH cx_root.\n`;
                 code += `    ENDTRY.\n\n`;
-                code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE itab.\n\n`;
+                code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE @itab.\n\n`;
                 if (writeLog) {
                     code += `    sum = sum + sy-dbcnt.\n`;
                     code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
@@ -256,7 +270,7 @@ const commands = {
             code += `      ).\n`;
             code += `    CATCH cx_root.\n`;
             code += `    ENDTRY.\n\n`;
-            code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE itab.\n\n`;
+            code += `    INSERT ${ tablename.toLowerCase() } FROM TABLE @itab.\n\n`;
             if (writeLog) {
                 code += `    sum = sum + sy-dbcnt.\n`;
                 code += `    out->write( |{ sy-dbcnt } entries inserted successfully| ).\n`;
